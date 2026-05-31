@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id                String     @id @default(cuid())
+  slug              String     @unique
+  name              String
+  cleanName         String?    @map("clean_name")
+  normalizedName    String     @map("normalized_name")
+  type              String?
+  supertype         String?
+  domains           String[]   @default([])
+  energy            Int?
+  might             Int?
+  power             Int?
+  rulesTextPlain    String?    @map("rules_text_plain")
+  rulesTextHtml     String?    @map("rules_text_html")
+  flavorText        String?    @map("flavor_text")
+  tags              String[]   @default([])
+  orientation       String?
+  accessibilityText String?    @map("accessibility_text")
+  searchText        String     @map("search_text")
+  createdAt         DateTime   @default(now()) @map("created_at")
+  updatedAt         DateTime   @updatedAt @map("updated_at")
+  printings         Printing[]
+
+  @@index([normalizedName])
+  @@map("cards")
+}
+
+model Set {
+  id          String     @id @default(cuid())
+  code        String     @unique
+  name        String
+  cardCount   Int?       @map("card_count")
+  releaseDate DateTime?  @map("release_date")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  printings   Printing[]
+
+  @@map("sets")
+}
+
+model Printing {
+  id                String   @id @default(cuid())
+  cardId            String   @map("card_id")
+  setId             String?  @map("set_id")
+  provider          String
+  providerCardId    String   @map("provider_card_id")
+  riftboundId       String?  @map("riftbound_id")
+  tcgplayerId       String?  @map("tcgplayer_id")
+  collectorNumber   Int?     @map("collector_number")
+  rarity            String?
+  imageUrl          String?  @map("image_url")
+  imageWidth        Int?     @map("image_width")
+  imageHeight       Int?     @map("image_height")
+  imageSource       String?  @map("image_source")
+  imageAltText      String?  @map("image_alt_text")
+  artist            String?
+  alternateArt      Boolean  @default(false) @map("alternate_art")
+  overnumbered      Boolean  @default(false)
+  signature         Boolean  @default(false)
+  providerUpdatedAt DateTime? @map("provider_updated_at")
+  rawSource         Json     @map("raw_source")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  card              Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  set               Set?     @relation(fields: [setId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, providerCardId])
+  @@index([setId])
+  @@index([collectorNumber])
+  @@map("printings")
+}
+
+model ImportRun {
+  id               String    @id @default(cuid())
+  provider         String
+  status           String
+  startedAt        DateTime  @default(now()) @map("started_at")
+  finishedAt       DateTime? @map("finished_at")
+  cardsSeen        Int       @default(0) @map("cards_seen")
+  cardsCreated     Int       @default(0) @map("cards_created")
+  cardsUpdated     Int       @default(0) @map("cards_updated")
+  printingsCreated Int       @default(0) @map("printings_created")
+  printingsUpdated Int       @default(0) @map("printings_updated")
+  errorMessage     String?   @map("error_message")
+
+  @@index([provider, startedAt])
+  @@map("import_runs")
+}
