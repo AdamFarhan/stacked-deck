@@ -31,9 +31,15 @@ export function SearchForm({
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Search Riftbound cards"
         aria-label="Search Riftbound cards"
-        className={size === "large" ? "h-14 rounded-lg text-lg" : undefined}
+        autoFocus
+        className={size === "large" ? "h-14 rounded-lg border-white/35 text-lg shadow-sm" : undefined}
       />
-      <Button type="submit" size={size === "large" ? "lg" : "default"} aria-label="Search">
+      <Button
+        type="submit"
+        size={size === "large" ? "lg" : "default"}
+        aria-label="Search"
+        className={size === "large" ? "border border-white/35 shadow-sm hover:border-white/50" : undefined}
+      >
         <Search className="h-4 w-4" />
         Search
       </Button>

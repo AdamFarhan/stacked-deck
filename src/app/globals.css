@@ -8,7 +8,7 @@
     --foreground: 220 18% 12%;
     --card: 0 0% 100%;
     --card-foreground: 220 18% 12%;
-    --primary: 166 58% 22%;
+    --primary: 354 70% 42%;
     --primary-foreground: 0 0% 100%;
     --secondary: 210 20% 92%;
     --secondary-foreground: 220 18% 14%;
@@ -20,8 +20,13 @@
     --destructive-foreground: 0 0% 100%;
     --border: 220 13% 82%;
     --input: 220 13% 82%;
-    --ring: 166 58% 28%;
+    --ring: 355 65% 33%;
     --radius: 0.5rem;
+    --brand-purple-light: #6f4690;
+    --brand-purple-mid: #5b3a7d;
+    --brand-purple-dark: #452f6c;
+    --brand-red: #b42030;
+    --brand-red-dark: #8c1e29;
   }
 
   * {
@@ -35,4 +40,13 @@
 
 .rich-text p + p {
   margin-top: 0.75rem;
+}
+
+.home-brand-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--brand-purple-light) 0%,
+    var(--brand-purple-mid) 45%,
+    var(--brand-purple-dark) 100%
+  );
 }
