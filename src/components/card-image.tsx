@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -6,11 +7,13 @@ export function CardImage({
   alt,
   className,
   priority = false,
+  sideways = false,
 }: {
   src?: string | null;
   alt: string;
   className?: string;
   priority?: boolean;
+  sideways?: boolean;
 }) {
   if (!src) {
     return (
@@ -33,7 +36,10 @@ export function CardImage({
         fill
         priority={priority}
         sizes="(min-width: 1024px) 320px, (min-width: 640px) 260px, 80vw"
-        className="object-cover"
+        className={cn(
+          "object-cover",
+          sideways && "rotate-90 scale-[1.396] object-contain",
+        )}
       />
     </div>
   );

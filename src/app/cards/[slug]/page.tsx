@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardImage } from "@/components/card-image";
+import { getVisibleDomains, isBattlefieldCard } from "@/lib/cards";
 import { getCardBySlug } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   }
 
   const primaryPrinting = card.printings[0];
+  const visibleDomains = getVisibleDomains(card.domains);
 
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:grid-cols-[260px_1fr] lg:grid-cols-[320px_1fr]">
@@ -23,6 +25,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           src={primaryPrinting?.imageUrl}
           alt={primaryPrinting?.imageAltText ?? card.accessibilityText ?? card.name}
           priority
+          sideways={isBattlefieldCard(card.type)}
         />
       </div>
 
@@ -33,7 +36,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
             {[card.supertype, card.type].filter(Boolean).join(" ") || "Riftbound card"}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            {card.domains.map((domain) => (
+            {visibleDomains.map((domain) => (
               <Badge key={domain} variant="outline">
                 {domain}
               </Badge>

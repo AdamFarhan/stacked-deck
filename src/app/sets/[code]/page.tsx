@@ -31,7 +31,7 @@ export default async function SetPage({ params }: { params: Promise<{ code: stri
         <h1 className="mt-2 text-2xl font-semibold tracking-normal">{set.name}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{set.printings.length} printings imported</p>
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="mt-6 grid grid-cols-2 items-start gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {uniqueCards.map((card) => (
           <CardResult key={card.id} card={card} />
         ))}
