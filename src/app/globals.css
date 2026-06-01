@@ -42,6 +42,10 @@
   margin-top: 0.75rem;
 }
 
+.font-beaufort {
+  font-family: var(--font-beaufort), ui-serif, Georgia, serif;
+}
+
 .home-brand-gradient {
   background: linear-gradient(
     180deg,

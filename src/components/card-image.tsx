@@ -26,13 +26,13 @@ export function CardImage({
   }
 
   return (
-    <div className={cn("relative aspect-[744/1039] overflow-hidden rounded-md border bg-muted", className)}>
+    <div className={cn("relative aspect-[744/1039] overflow-hidden rounded-[4.5%]", className)}>
       <Image
         src={src}
         alt={alt}
         fill
         priority={priority}
-        sizes="(min-width: 1024px) 280px, (min-width: 640px) 33vw, 80vw"
+        sizes="(min-width: 1024px) 320px, (min-width: 640px) 260px, 80vw"
         className="object-cover"
       />
     </div>

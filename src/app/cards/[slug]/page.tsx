@@ -17,7 +17,7 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
   const primaryPrinting = card.printings[0];
 
   return (
-    <section className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[320px_1fr]">
+    <section className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:grid-cols-[260px_1fr] lg:grid-cols-[320px_1fr]">
       <div>
         <CardImage
           src={primaryPrinting?.imageUrl}

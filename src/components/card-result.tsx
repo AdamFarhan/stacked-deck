@@ -10,9 +10,9 @@ export function CardResult({ card }: { card: CardWithPrintings }) {
 
   return (
     <Link href={`/cards/${card.slug}`} className="group block">
-      <Card className="h-full overflow-hidden transition-colors hover:border-foreground/30">
+      <Card className="h-full overflow-hidden bg-black transition-shadow hover:shadow-md">
         <CardImage src={printing?.imageUrl} alt={imageAlt} className="rounded-b-none border-0" />
-        <CardContent className="space-y-3 p-4">
+        <CardContent className="space-y-3 bg-card p-4">
           <div>
             <h2 className="line-clamp-2 text-base font-semibold leading-tight">{card.name}</h2>
             <p className="mt-1 text-sm text-muted-foreground">

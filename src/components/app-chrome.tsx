@@ -36,7 +36,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
               aria-label="Stacked Deck"
             >
               <img src="/logo-white.png" alt="" className="h-auto w-9" width="512" height="386" />
-              <span className="hidden sm:inline">Stacked Deck</span>
+              <span className="font-beaufort hidden text-xl font-bold sm:inline">Stacked Deck</span>
             </Link>
             <div className="min-w-0 flex-1 sm:px-4">
               <SearchForm variant="header" />
@@ -64,7 +64,7 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
                 <DrawerHeader className="flex flex-row items-center justify-between gap-4 border-b p-4 text-left">
                   <div className="flex items-center gap-3">
                     <img src="/logo-black.png" alt="" className="h-auto w-10" width="512" height="386" />
-                    <DrawerTitle>Stacked Deck</DrawerTitle>
+                    <DrawerTitle className="font-beaufort font-bold">Stacked Deck</DrawerTitle>
                     <DrawerDescription className="sr-only">Mobile navigation menu</DrawerDescription>
                   </div>
                   <DrawerClose asChild>
