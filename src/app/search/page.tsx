@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { CardResult } from "@/components/card-result";
-import { SearchForm } from "@/components/search-form";
 import { getSingleCardRedirect, searchCards } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
@@ -21,10 +20,6 @@ export default async function SearchPage({
 
   return (
     <section className="mx-auto w-full max-w-6xl px-4 py-8">
-      <div className="mb-8 max-w-2xl">
-        <SearchForm initialQuery={query} />
-      </div>
-
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-normal">Search results</h1>
