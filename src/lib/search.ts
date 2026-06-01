@@ -21,19 +21,8 @@ export async function searchCards(rawQuery: string, limit = 60): Promise<CardWit
     return [];
   }
 
-  const terms = normalized.split(" ").filter(Boolean);
-  const where: Prisma.CardWhereInput = {
-    OR: [
-      { normalizedName: { contains: normalized, mode: "insensitive" } },
-      { searchText: { contains: normalized, mode: "insensitive" } },
-      ...terms.map((term) => ({
-        searchText: { contains: term, mode: "insensitive" as const },
-      })),
-    ],
-  };
-
   const cards = await prisma.card.findMany({
-    where,
+    where: buildCardSearchWhere(normalized),
     include: {
       printings: {
         include: {
@@ -46,6 +35,15 @@ export async function searchCards(rawQuery: string, limit = 60): Promise<CardWit
   });
 
   return rankCards(cards, normalized);
+}
+
+export function buildCardSearchWhere(normalizedQuery: string): Prisma.CardWhereInput {
+  return {
+    OR: [
+      { normalizedName: { contains: normalizedQuery, mode: "insensitive" } },
+      { searchText: { contains: normalizedQuery, mode: "insensitive" } },
+    ],
+  };
 }
 
 export function rankCards<T extends Pick<Card, "normalizedName" | "searchText" | "name">>(

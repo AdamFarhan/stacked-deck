@@ -101,4 +101,23 @@ describe("RiftCodex mapping", () => {
     expect(mapped[0].printing.rarity).toBe("Epic");
     expect(mapped[1].printing.rarity).toBe("Promo");
   });
+
+  it("builds search text from card name, tags, and rules text only", () => {
+    const [mapped] = extractRiftcodexCards({ data: payload }).map(mapRiftcodexCard);
+
+    expect(mapped.card.searchText).toContain("Master Yi - Honed");
+    expect(mapped.card.searchText).toContain("Master Yi Honed");
+    expect(mapped.card.searchText).toContain("Master Yi");
+    expect(mapped.card.searchText).toContain("Ionia");
+    expect(mapped.card.searchText).toContain("[Ganking]");
+    expect(mapped.card.searchText).toContain("I enter ready.");
+
+    expect(mapped.card.searchText).not.toContain("Unit");
+    expect(mapped.card.searchText).not.toContain("Champion");
+    expect(mapped.card.searchText).not.toContain("Body");
+    expect(mapped.card.searchText).not.toContain("OGS");
+    expect(mapped.card.searchText).not.toContain("Proving Grounds");
+    expect(mapped.card.searchText).not.toContain("The focused mind can pierce through stone.");
+    expect(mapped.card.searchText).not.toContain("Riftbound Unit: Yi, Honed.");
+  });
 });

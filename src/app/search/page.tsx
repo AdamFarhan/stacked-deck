@@ -46,7 +46,7 @@ export default async function SearchPage({
         <div className="rounded-lg border border-dashed bg-card px-6 py-12 text-center">
           <h2 className="text-lg font-medium">Nothing in the stack yet</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Try a card name, champion, region, type, or set code. If the database is empty, run the card importer first.
+            Try a card name, tag, or card text. If the database is empty, run the card importer first.
           </p>
         </div>
       )}

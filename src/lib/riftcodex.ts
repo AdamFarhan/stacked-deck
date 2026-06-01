@@ -89,19 +89,7 @@ export function mapRiftcodexCard(source: RiftcodexCard) {
   const rulesTextPlain = source.text?.plain ?? null;
   const rulesTextHtml = source.text?.rich ?? null;
   const flavorText = source.text?.flavour ?? null;
-  const searchText = compactSearchText([
-    source.name,
-    cleanName,
-    type,
-    supertype,
-    domains,
-    tags,
-    rulesTextPlain,
-    flavorText,
-    source.set?.set_id,
-    source.set?.id,
-    source.set?.label,
-  ]);
+  const searchText = compactSearchText([source.name, cleanName, tags, rulesTextPlain]);
 
   return {
     set: source.set
