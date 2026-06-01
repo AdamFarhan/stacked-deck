@@ -30,8 +30,12 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
       {!isHome ? (
         <header className="border-b border-[var(--brand-purple-dark)] bg-[var(--brand-purple-light)] text-white">
           <div className="relative mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-3 sm:gap-4">
-            <Link href="/" className="shrink-0 text-lg font-semibold tracking-normal" aria-label="Stacked Deck">
-              <span className="sm:hidden">SD</span>
+            <Link
+              href="/"
+              className="flex shrink-0 items-center gap-2 text-lg font-semibold tracking-normal"
+              aria-label="Stacked Deck"
+            >
+              <img src="/logo-white.png" alt="" className="h-auto w-9" width="512" height="386" />
               <span className="hidden sm:inline">Stacked Deck</span>
             </Link>
             <div className="min-w-0 flex-1 sm:px-4">
@@ -58,7 +62,8 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
               </DrawerTrigger>
               <DrawerContent id="mobile-navigation-drawer" className="sm:hidden">
                 <DrawerHeader className="flex flex-row items-center justify-between gap-4 border-b p-4 text-left">
-                  <div>
+                  <div className="flex items-center gap-3">
+                    <img src="/logo-black.png" alt="" className="h-auto w-10" width="512" height="386" />
                     <DrawerTitle>Stacked Deck</DrawerTitle>
                     <DrawerDescription className="sr-only">Mobile navigation menu</DrawerDescription>
                   </div>
