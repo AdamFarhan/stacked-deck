@@ -7,12 +7,13 @@ import { getVisibleDomains, isBattlefieldCard } from "@/lib/cards";
 
 export function CardResult({ card }: { card: CardWithPrintings }) {
   const printing = card.printings[0];
-  const imageAlt = printing?.imageAltText ?? card.accessibilityText ?? card.name;
+  const imageAlt =
+    printing?.imageAltText ?? card.accessibilityText ?? card.name;
   const visibleDomains = getVisibleDomains(card.domains);
 
   return (
     <Link href={`/cards/${card.slug}`} className="group block">
-      <Card className="overflow-hidden bg-black transition-shadow hover:shadow-md">
+      <Card className="rounded-t-3xl rounded-b-lg overflow-hidden bg-transparent transition-shadow hover:shadow-md">
         <CardImage
           src={printing?.imageUrl}
           alt={imageAlt}
@@ -21,9 +22,12 @@ export function CardResult({ card }: { card: CardWithPrintings }) {
         />
         <CardContent className="space-y-3 bg-card p-4">
           <div>
-            <h2 className="line-clamp-2 text-base font-semibold leading-tight">{card.name}</h2>
+            <h2 className="line-clamp-2 text-base font-semibold leading-tight">
+              {card.name}
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {[card.supertype, card.type].filter(Boolean).join(" ") || "Riftbound card"}
+              {[card.supertype, card.type].filter(Boolean).join(" ") ||
+                "Riftbound card"}
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5">
