@@ -12,8 +12,8 @@ export default async function SetsPage() {
       <h1 className="text-2xl font-semibold tracking-normal">Sets</h1>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sets.map((set) => (
-          <Link key={set.id} href={`/sets/${set.code.toLowerCase()}`}>
-            <Card className="h-full transition-colors hover:border-foreground/30">
+          <Link key={set.id} href={`/sets/${set.code.toLowerCase()}`} className="block">
+            <Card className="h-full transition-shadow hover:shadow-md">
               <CardHeader>
                 <CardTitle>{set.code}</CardTitle>
               </CardHeader>
