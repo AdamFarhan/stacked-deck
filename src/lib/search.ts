@@ -71,10 +71,8 @@ export function cardScore(card: Pick<Card, "normalizedName" | "searchText">, nor
   return 10;
 }
 
-export function getSingleCardRedirect(cards: Pick<Card, "slug" | "normalizedName">[], rawQuery: string) {
-  const normalized = normalizeText(rawQuery);
-  const exact = cards.filter((card) => card.normalizedName === normalized);
-  return exact.length === 1 ? exact[0].slug : null;
+export function getSingleCardRedirect(cards: Pick<Card, "slug">[]) {
+  return cards.length === 1 ? cards[0].slug : null;
 }
 
 export async function getCardBySlug(slug: string) {

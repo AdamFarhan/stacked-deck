@@ -17,9 +17,13 @@ const cards = [
 ];
 
 describe("search helpers", () => {
-  it("redirects only when there is exactly one exact canonical match", () => {
-    expect(getSingleCardRedirect(cards, "Master Yi - Honed")).toBe("master-yi-honed");
-    expect(getSingleCardRedirect(cards, "Master Yi")).toBeNull();
+  it("redirects when a search returns exactly one card", () => {
+    expect(getSingleCardRedirect([cards[0]])).toBe("master-yi-honed");
+  });
+
+  it("does not redirect when a search returns zero or multiple cards", () => {
+    expect(getSingleCardRedirect([])).toBeNull();
+    expect(getSingleCardRedirect(cards)).toBeNull();
   });
 
   it("ranks exact names before partial matches", () => {

@@ -12,7 +12,7 @@ export default async function SearchPage({
   const params = await searchParams;
   const query = params.q ?? "";
   const cards = await searchCards(query);
-  const redirectSlug = getSingleCardRedirect(cards, query);
+  const redirectSlug = getSingleCardRedirect(cards);
 
   if (redirectSlug) {
     redirect(`/cards/${redirectSlug}`);
