@@ -1,6 +1,6 @@
 "use client";
 
-import { List, Menu, X } from "lucide-react";
+import { List, Menu, Shuffle, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -52,6 +52,9 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
             <nav className="hidden items-center gap-4 text-sm text-white/80 sm:flex">
               <Link href="/sets" className="hover:text-white">
                 Sets
+              </Link>
+              <Link href="/cards/random" className="hover:text-white">
+                Random
               </Link>
             </nav>
             <Drawer
@@ -111,6 +114,15 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
                     >
                       <List className="h-4 w-4" aria-hidden="true" />
                       Sets
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/cards/random"
+                      className="inline-flex items-center gap-2 rounded-md px-3 py-2 font-medium hover:bg-accent"
+                    >
+                      <Shuffle className="h-4 w-4" aria-hidden="true" />
+                      Random
                     </Link>
                   </DrawerClose>
                 </nav>

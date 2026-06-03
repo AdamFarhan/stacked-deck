@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { buildCardSearchWhere, cardScore, getSingleCardRedirect, rankCards, setListOrderBy } from "@/lib/search";
+import {
+  buildCardSearchWhere,
+  cardScore,
+  hashSeed,
+  getSingleCardRedirect,
+  rankCards,
+  selectRandomCard,
+  selectSeededRandomFlavorCard,
+  setListOrderBy,
+} from "@/lib/search";
 
 const cards = [
   {
@@ -49,5 +58,50 @@ describe("search helpers", () => {
       { releaseDate: { sort: "desc", nulls: "last" } },
       { code: "asc" },
     ]);
+  });
+
+  it("returns no random card when the card pool is empty", () => {
+    expect(selectRandomCard([])).toBeNull();
+  });
+
+  it("selects a runtime-random card from the card pool", () => {
+    expect(selectRandomCard(cards, () => 0.75)?.slug).toBe("master-yi-disciple");
+  });
+
+  it("selects seeded flavor cards deterministically", () => {
+    const flavorCards = [
+      { slug: "aatrox", flavorText: "I am not defeated." },
+      { slug: "ahri", flavorText: "The forest remembers." },
+      { slug: "annie", flavorText: "Have you seen Tibbers?" },
+    ];
+    const seed = "2026-06-03";
+    const expectedCard = flavorCards[hashSeed(seed) % flavorCards.length];
+
+    expect(selectSeededRandomFlavorCard(flavorCards, seed)).toBe(expectedCard);
+    expect(selectSeededRandomFlavorCard(flavorCards, seed)).toBe(expectedCard);
+  });
+
+  it("filters out cards without flavor text for seeded flavor selection", () => {
+    const flavorCards = [
+      { slug: "blank", flavorText: "" },
+      { slug: "missing", flavorText: null },
+      { slug: "spaces", flavorText: "   " },
+      { slug: "flavorful", flavorText: "A proper bit of story." },
+    ];
+
+    expect(selectSeededRandomFlavorCard(flavorCards, "any-seed")?.slug).toBe("flavorful");
+  });
+
+  it("returns no seeded flavor card when no card has flavor text", () => {
+    expect(
+      selectSeededRandomFlavorCard(
+        [
+          { slug: "blank", flavorText: "" },
+          { slug: "missing", flavorText: null },
+          { slug: "spaces", flavorText: "   " },
+        ],
+        "2026-06-03",
+      ),
+    ).toBeNull();
   });
 });

@@ -18,6 +18,9 @@ export type CardWithPrintings = Prisma.CardGetPayload<{
   };
 }>;
 
+type RandomCard = Pick<Card, "slug">;
+type FlavorCard = Pick<Card, "slug" | "flavorText">;
+
 export async function searchCards(rawQuery: string, limit = 60): Promise<CardWithPrintings[]> {
   const query = rawQuery.trim();
   const normalized = normalizeText(query);
@@ -73,6 +76,68 @@ export function cardScore(card: Pick<Card, "normalizedName" | "searchText">, nor
 
 export function getSingleCardRedirect(cards: Pick<Card, "slug">[]) {
   return cards.length === 1 ? cards[0].slug : null;
+}
+
+export async function getRandomCard() {
+  const cardCount = await prisma.card.count();
+
+  if (cardCount === 0) {
+    return null;
+  }
+
+  const [card] = await prisma.card.findMany({
+    orderBy: { slug: "asc" },
+    skip: Math.floor(Math.random() * cardCount),
+    take: 1,
+  });
+
+  return card ?? null;
+}
+
+export async function getSeededRandomFlavorCard(seed: string) {
+  const cards = await prisma.card.findMany({
+    orderBy: { slug: "asc" },
+    select: {
+      slug: true,
+      flavorText: true,
+    },
+    where: {
+      flavorText: {
+        not: null,
+      },
+    },
+  });
+
+  return selectSeededRandomFlavorCard(cards, seed);
+}
+
+export function selectRandomCard<T extends RandomCard>(cards: T[], random = Math.random) {
+  if (cards.length === 0) {
+    return null;
+  }
+
+  return cards[Math.floor(random() * cards.length)] ?? null;
+}
+
+export function selectSeededRandomFlavorCard<T extends FlavorCard>(cards: T[], seed: string) {
+  const flavorCards = cards.filter((card) => card.flavorText?.trim());
+
+  if (flavorCards.length === 0) {
+    return null;
+  }
+
+  return flavorCards[hashSeed(seed) % flavorCards.length] ?? null;
+}
+
+export function hashSeed(seed: string) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
 }
 
 export async function getCardBySlug(slug: string) {

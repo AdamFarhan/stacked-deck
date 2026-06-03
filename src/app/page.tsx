@@ -1,5 +1,6 @@
 import { SearchForm } from "@/components/search-form";
-import { List } from "lucide-react";
+import { getSeededRandomFlavorCard } from "@/lib/search";
+import { List, Shuffle } from "lucide-react";
 import Link from "next/link";
 
 const homeLinks = [
@@ -8,9 +9,18 @@ const homeLinks = [
     label: "Sets",
     Icon: List,
   },
+  {
+    href: "/cards/random",
+    label: "Random",
+    Icon: Shuffle,
+  },
 ];
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const dailyFlavorCard = await getSeededRandomFlavorCard(getTodaySeed());
+
   return (
     <section className="home-brand-gradient flex min-h-screen w-full flex-col items-center px-4 py-16 text-center">
       <div className="flex w-full flex-1 items-center justify-center">
@@ -24,12 +34,17 @@ export default function HomePage() {
                 width="512"
                 height="386"
               />
-              <h1 className="font-beaufort text-4xl font-bold tracking-normal text-white sm:text-6xl">Stacked Deck</h1>
+              <h1 className="font-beaufort text-4xl font-bold tracking-normal text-white sm:text-6xl">
+                Stacked Deck
+              </h1>
             </div>
           </div>
           <div className="mx-auto w-full max-w-xl space-y-4">
             <SearchForm size="large" />
-            <nav aria-label="Home navigation" className="flex flex-wrap items-center justify-center gap-2">
+            <nav
+              aria-label="Home navigation"
+              className="flex flex-wrap items-center justify-center gap-2"
+            >
               {homeLinks.map(({ href, label, Icon }) => (
                 <Link
                   key={href}
@@ -44,7 +59,30 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-      <p className="pt-12 text-lg font-light italic tracking-normal text-white/80">Just lucky, I guess.</p>
+      {dailyFlavorCard ? (
+        <Link
+          href={`/cards/${dailyFlavorCard.slug}`}
+          className="pt-12 text-lg font-light italic tracking-normal text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+        >
+          {dailyFlavorCard.flavorText}
+        </Link>
+      ) : (
+        <Link
+          href={`/cards/stacked-deck`}
+          className="pt-12 text-lg font-light italic tracking-normal text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+        >
+          Just lucky, I guess.
+        </Link>
+      )}
     </section>
   );
+}
+
+function getTodaySeed() {
+  const today = new Date(Date.now());
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
