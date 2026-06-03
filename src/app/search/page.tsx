@@ -22,10 +22,12 @@ export default async function SearchPage({
     <section className="mx-auto w-full max-w-6xl px-4 py-8">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-normal">Search results</h1>
+          <h1 className="text-2xl font-semibold tracking-normal">
+            Search results
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {cards.length > 0
-              ? `${cards.length} canonical ${cards.length === 1 ? "card" : "cards"} found for "${query}".`
+              ? `${cards.length} ${cards.length === 1 ? "card" : "cards"} found for "${query}"`
               : `No cards found for "${query}".`}
           </p>
         </div>
@@ -41,7 +43,8 @@ export default async function SearchPage({
         <div className="rounded-lg border border-dashed bg-card px-6 py-12 text-center">
           <h2 className="text-lg font-medium">Nothing in the stack yet</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Try a card name, tag, or card text. If the database is empty, run the card importer first.
+            Try a card name, tag, or card text. If the database is empty, run
+            the card importer first.
           </p>
         </div>
       )}
