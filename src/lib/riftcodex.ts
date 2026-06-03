@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isExcludedSet } from "@/lib/excluded-sets";
 import { compactSearchText, normalizeText, slugify } from "@/lib/text";
 
 export const riftcodexCardSchema = z.object({
@@ -64,6 +65,33 @@ export const riftcodexCardSchema = z.object({
 
 export type RiftcodexCard = z.infer<typeof riftcodexCardSchema>;
 
+export const riftcodexSetSchema = z.object({
+  id: z.string(),
+  set_id: z.string().nullable().optional(),
+  name: z.string().nullable().optional(),
+  label: z.string().nullable().optional(),
+  card_count: z.number().int().nullable().optional(),
+  published_on: z.string().nullable().optional(),
+});
+
+export type RiftcodexSet = z.infer<typeof riftcodexSetSchema>;
+export type RiftcodexSetImport = {
+  code: string;
+  name: string;
+  cardCount: number | null;
+  releaseDate: Date | null;
+};
+
+export function filterImportableRiftcodexCards(cards: RiftcodexCard[]) {
+  return cards.filter(
+    (card) =>
+      !isExcludedSet({
+        code: card.set?.set_id ?? card.set?.id,
+        name: card.set?.label,
+      }),
+  );
+}
+
 export function extractRiftcodexCards(payload: unknown): RiftcodexCard[] {
   const candidate =
     Array.isArray(payload)
@@ -77,6 +105,72 @@ export function extractRiftcodexCards(payload: unknown): RiftcodexCard[] {
           : [];
 
   return z.array(riftcodexCardSchema).parse(candidate);
+}
+
+export function extractRiftcodexSets(payload: unknown): RiftcodexSet[] {
+  const candidate =
+    Array.isArray(payload)
+      ? payload
+      : typeof payload === "object" && payload !== null && "sets" in payload
+        ? (payload as { sets: unknown }).sets
+        : typeof payload === "object" && payload !== null && "items" in payload
+          ? (payload as { items: unknown }).items
+          : typeof payload === "object" && payload !== null && "data" in payload
+            ? (payload as { data: unknown }).data
+            : [];
+
+  return z.array(riftcodexSetSchema).parse(candidate);
+}
+
+export function filterImportableRiftcodexSets(sets: RiftcodexSet[]) {
+  return sets.filter(
+    (set) =>
+      !isExcludedSet({
+        code: set.set_id ?? set.id,
+        name: set.label ?? set.name,
+      }),
+  );
+}
+
+export function mapRiftcodexSet(source: RiftcodexSet): RiftcodexSetImport {
+  const code = (source.set_id ?? source.id).toUpperCase();
+
+  return {
+    code,
+    name: source.label ?? source.name ?? code,
+    cardCount: source.card_count ?? null,
+    releaseDate: parseRiftcodexDate(source.published_on),
+  };
+}
+
+export function mergeRiftcodexSets(
+  cardSets: Iterable<{ code: string; name: string }>,
+  endpointSets: RiftcodexSetImport[],
+) {
+  const setsByCode = new Map<string, RiftcodexSetImport>();
+
+  for (const set of cardSets) {
+    setsByCode.set(set.code, {
+      code: set.code,
+      name: set.name,
+      cardCount: null,
+      releaseDate: null,
+    });
+  }
+
+  for (const set of endpointSets) {
+    const existing = setsByCode.get(set.code);
+    if (!existing) continue;
+
+    setsByCode.set(set.code, {
+      code: set.code,
+      name: set.name || existing.name || set.code,
+      cardCount: set.cardCount,
+      releaseDate: set.releaseDate,
+    });
+  }
+
+  return setsByCode;
 }
 
 export function mapRiftcodexCard(source: RiftcodexCard) {
@@ -137,4 +231,11 @@ export function mapRiftcodexCard(source: RiftcodexCard) {
       rawSource: source,
     },
   };
+}
+
+function parseRiftcodexDate(value: string | null | undefined) {
+  if (!value) return null;
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }

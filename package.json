@@ -12,7 +12,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:push": "prisma db push",
-    "import:cards": "tsx scripts/import-cards.ts"
+    "import:cards": "tsx scripts/import-cards.ts",
+    "cleanup:excluded-sets": "tsx scripts/remove-excluded-sets.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

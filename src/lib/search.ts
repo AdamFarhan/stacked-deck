@@ -2,6 +2,11 @@ import type { Card, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { normalizeText } from "@/lib/text";
 
+export const setListOrderBy = [
+  { releaseDate: { sort: "desc", nulls: "last" } },
+  { code: "asc" },
+] satisfies Prisma.SetOrderByWithRelationInput[];
+
 export type CardWithPrintings = Prisma.CardGetPayload<{
   include: {
     printings: {
@@ -95,7 +100,7 @@ export async function getSets() {
         },
       },
     },
-    orderBy: { code: "asc" },
+    orderBy: setListOrderBy,
   });
 }
 

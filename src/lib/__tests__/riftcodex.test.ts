@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { extractRiftcodexCards, mapRiftcodexCard } from "@/lib/riftcodex";
+import {
+  extractRiftcodexCards,
+  extractRiftcodexSets,
+  filterImportableRiftcodexCards,
+  filterImportableRiftcodexSets,
+  mapRiftcodexCard,
+  mapRiftcodexSet,
+  mergeRiftcodexSets,
+} from "@/lib/riftcodex";
 
 const payload = [
   {
@@ -88,6 +96,25 @@ const payload = [
   },
 ];
 
+const setsPayload = [
+  {
+    id: "8af10984-b937-46fc-bc68-2d67682b491b",
+    name: "Origins: Proving Grounds",
+    set_id: "OGS",
+    label: "Proving Grounds",
+    card_count: 298,
+    published_on: "2025-10-31T00:00:00Z",
+  },
+  {
+    id: "promo-set-id",
+    name: "Riftbound Promotional Cards",
+    set_id: "PR",
+    label: "Riftbound Promotional Cards",
+    card_count: 12,
+    published_on: "2025-11-01T00:00:00Z",
+  },
+];
+
 describe("RiftCodex mapping", () => {
   it("extracts provider payloads and maps duplicate printings to one canonical slug", () => {
     const cards = extractRiftcodexCards({ data: payload });
@@ -119,5 +146,56 @@ describe("RiftCodex mapping", () => {
     expect(mapped.card.searchText).not.toContain("Proving Grounds");
     expect(mapped.card.searchText).not.toContain("The focused mind can pierce through stone.");
     expect(mapped.card.searchText).not.toContain("Riftbound Unit: Yi, Honed.");
+  });
+
+  it("filters promo and judge records before import mapping", () => {
+    const importableCards = filterImportableRiftcodexCards(extractRiftcodexCards({ data: payload }));
+
+    expect(importableCards).toHaveLength(1);
+    expect(importableCards[0].set?.set_id).toBe("OGS");
+  });
+
+  it("extracts and maps set release metadata from published_on", () => {
+    const [mapped] = extractRiftcodexSets({ data: setsPayload }).map(mapRiftcodexSet);
+
+    expect(mapped).toEqual({
+      code: "OGS",
+      name: "Proving Grounds",
+      cardCount: 298,
+      releaseDate: new Date("2025-10-31T00:00:00Z"),
+    });
+  });
+
+  it("filters excluded sets from the sets endpoint", () => {
+    const importableSets = filterImportableRiftcodexSets(extractRiftcodexSets({ data: setsPayload }));
+
+    expect(importableSets).toHaveLength(1);
+    expect(importableSets[0].set_id).toBe("OGS");
+  });
+
+  it("merges endpoint set metadata into card-derived sets only", () => {
+    const mergedSets = mergeRiftcodexSets(
+      [
+        { code: "OGS", name: "Origins" },
+        { code: "MISSING", name: "Card-only Set" },
+      ],
+      extractRiftcodexSets({ data: setsPayload }).map(mapRiftcodexSet),
+    );
+
+    expect([...mergedSets.values()]).toEqual([
+      {
+        code: "OGS",
+        name: "Proving Grounds",
+        cardCount: 298,
+        releaseDate: new Date("2025-10-31T00:00:00Z"),
+      },
+      {
+        code: "MISSING",
+        name: "Card-only Set",
+        cardCount: null,
+        releaseDate: null,
+      },
+    ]);
+    expect(mergedSets.has("PR")).toBe(false);
   });
 });

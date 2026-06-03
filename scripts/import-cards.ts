@@ -1,5 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { extractRiftcodexCards, mapRiftcodexCard } from "../src/lib/riftcodex";
+import {
+  extractRiftcodexCards,
+  extractRiftcodexSets,
+  filterImportableRiftcodexCards,
+  filterImportableRiftcodexSets,
+  mapRiftcodexCard,
+  mapRiftcodexSet,
+  mergeRiftcodexSets,
+} from "../src/lib/riftcodex";
 
 const prisma = new PrismaClient();
 const BATCH_SIZE = 50;
@@ -18,12 +26,18 @@ async function main() {
   });
 
   try {
-    const sourceCards = await fetchRiftcodexCards();
-    const mappedRecords = sourceCards.map(mapRiftcodexCard);
+    const [sourceCards, sourceSets] = await Promise.all([fetchRiftcodexCards(), fetchRiftcodexSets()]);
+    const importableCards = filterImportableRiftcodexCards(sourceCards);
+    const importableSets = filterImportableRiftcodexSets(sourceSets);
+    const excludedCards = sourceCards.length - importableCards.length;
+    const mappedRecords = importableCards.map(mapRiftcodexCard);
     const cardsBySlug = uniqueBy(mappedRecords.map((record) => record.card), (card) => card.slug);
-    const setsByCode = uniqueBy(
-      mappedRecords.flatMap((record) => (record.set ? [record.set] : [])),
-      (set) => set.code,
+    const setsByCode = mergeRiftcodexSets(
+      uniqueBy(
+        mappedRecords.flatMap((record) => (record.set ? [record.set] : [])),
+        (set) => set.code,
+      ).values(),
+      importableSets.map(mapRiftcodexSet),
     );
 
     const existingCards = await prisma.card.findMany({
@@ -66,7 +80,11 @@ async function main() {
     await runBatches(updateSets, (set) =>
       prisma.set.update({
         where: { code: set.code },
-        data: { name: set.name },
+        data: {
+          name: set.name,
+          cardCount: set.cardCount,
+          releaseDate: set.releaseDate,
+        },
       }),
     );
 
@@ -132,7 +150,7 @@ async function main() {
     });
 
     console.log(
-      `Imported ${sourceCards.length} Riftbound records: ${newCards.length} cards created, ${updateCards.length} cards updated, ${newPrintings.length} printings created, ${updatePrintings.length} printings updated.`,
+      `Imported ${importableCards.length} of ${sourceCards.length} Riftbound records (${excludedCards} excluded): ${newCards.length} cards created, ${updateCards.length} cards updated, ${newPrintings.length} printings created, ${updatePrintings.length} printings updated.`,
     );
   } catch (error) {
     await prisma.importRun.update({
@@ -208,6 +226,18 @@ async function fetchRiftcodexCards() {
   }
 
   return cards;
+}
+
+async function fetchRiftcodexSets() {
+  const baseUrl = process.env.RIFTCODEX_API_BASE_URL ?? "https://api.riftcodex.com";
+  const url = new URL("/sets", baseUrl.replace(/\/api\/?$/, ""));
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`RiftCodex sets request failed with ${response.status} ${response.statusText}`);
+  }
+
+  return extractRiftcodexSets(await response.json());
 }
 
 main().catch((error) => {
