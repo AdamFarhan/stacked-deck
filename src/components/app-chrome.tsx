@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { List, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -75,7 +75,8 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
                 </DrawerHeader>
                 <nav className="grid gap-1 p-2 text-sm">
                   <DrawerClose asChild>
-                    <Link href="/sets" className="rounded-md px-3 py-2 font-medium hover:bg-accent">
+                    <Link href="/sets" className="inline-flex items-center gap-2 rounded-md px-3 py-2 font-medium hover:bg-accent">
+                      <List className="h-4 w-4" aria-hidden="true" />
                       Sets
                     </Link>
                   </DrawerClose>
