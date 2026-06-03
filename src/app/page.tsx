@@ -62,14 +62,14 @@ export default async function HomePage() {
       {dailyFlavorCard ? (
         <Link
           href={`/cards/${dailyFlavorCard.slug}`}
-          className="pt-12 text-lg font-light italic tracking-normal text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="p-12 text-lg font-light italic tracking-normal text-white/80 transition hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           {dailyFlavorCard.flavorText}
         </Link>
       ) : (
         <Link
           href={`/cards/stacked-deck`}
-          className="pt-12 text-lg font-light italic tracking-normal text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="p-12 text-lg font-light italic tracking-normal text-white/80 transition hover:text-white hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         >
           Just lucky, I guess.
         </Link>
