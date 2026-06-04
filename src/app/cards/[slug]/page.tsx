@@ -1,13 +1,21 @@
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardImage } from "@/components/card-image";
-import { getVisibleDomains, isBattlefieldCard } from "@/lib/cards";
+import { Tag } from "@/components/tag";
+import {
+  getClassificationTag,
+  getVisibleDomains,
+  isBattlefieldCard,
+} from "@/lib/cards";
 import { getCardBySlug } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
 
-export default async function CardPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CardPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const card = await getCardBySlug(slug);
 
@@ -17,13 +25,16 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
 
   const primaryPrinting = card.printings[0];
   const visibleDomains = getVisibleDomains(card.domains);
+  const classificationTag = getClassificationTag(card);
 
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:grid-cols-[260px_1fr] lg:grid-cols-[320px_1fr]">
       <div>
         <CardImage
           src={primaryPrinting?.imageUrl}
-          alt={primaryPrinting?.imageAltText ?? card.accessibilityText ?? card.name}
+          alt={
+            primaryPrinting?.imageAltText ?? card.accessibilityText ?? card.name
+          }
           priority
           sideways={isBattlefieldCard(card.type)}
         />
@@ -31,17 +42,19 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
 
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-semibold tracking-normal">{card.name}</h1>
-          <p className="mt-2 text-muted-foreground">
-            {[card.supertype, card.type].filter(Boolean).join(" ") || "Riftbound card"}
-          </p>
+          <h1 className="text-3xl font-semibold tracking-normal">
+            {card.name}
+          </h1>
           <div className="mt-4 flex flex-wrap gap-2">
+            {classificationTag ? (
+              <Tag value={classificationTag.value} label={classificationTag.label} />
+            ) : null}
             {visibleDomains.map((domain) => (
-              <Badge key={domain} variant="outline">
-                {domain}
-              </Badge>
+              <Tag key={domain} value={domain} />
             ))}
-            {primaryPrinting?.rarity ? <Badge>{primaryPrinting.rarity}</Badge> : null}
+            {primaryPrinting?.rarity ? (
+              <Tag value={primaryPrinting.rarity} />
+            ) : null}
           </div>
         </div>
 
@@ -52,21 +65,27 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
           <CardContent className="space-y-5">
             <dl className="grid grid-cols-3 gap-3 text-sm">
               <Stat label="Energy" value={card.energy} />
-              <Stat label="Might" value={card.might} />
               <Stat label="Power" value={card.power} />
+              <Stat label="Might" value={card.might} />
             </dl>
 
             {card.rulesTextHtml ? (
               <div
                 className="rich-text text-sm leading-6"
-                dangerouslySetInnerHTML={{ __html: sanitizeProviderHtml(card.rulesTextHtml) }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeProviderHtml(card.rulesTextHtml),
+                }}
               />
             ) : card.rulesTextPlain ? (
-              <p className="whitespace-pre-line text-sm leading-6">{card.rulesTextPlain}</p>
+              <p className="whitespace-pre-line text-sm leading-6">
+                {card.rulesTextPlain}
+              </p>
             ) : null}
 
             {card.flavorText ? (
-              <blockquote className="border-l-2 pl-4 text-sm italic text-muted-foreground">{card.flavorText}</blockquote>
+              <blockquote className="border-l-2 pl-4 text-sm italic text-muted-foreground">
+                {card.flavorText}
+              </blockquote>
             ) : null}
           </CardContent>
         </Card>
@@ -89,8 +108,12 @@ export default async function CardPage({ params }: { params: Promise<{ slug: str
                 <tbody>
                   {card.printings.map((printing) => (
                     <tr key={printing.id} className="border-t">
-                      <td className="px-3 py-2">{printing.set?.code ?? "Unknown"}</td>
-                      <td className="px-3 py-2">{printing.collectorNumber ?? "—"}</td>
+                      <td className="px-3 py-2">
+                        {printing.set?.code ?? "Unknown"}
+                      </td>
+                      <td className="px-3 py-2">
+                        {printing.collectorNumber ?? "—"}
+                      </td>
                       <td className="px-3 py-2">{printing.rarity ?? "—"}</td>
                       <td className="px-3 py-2">{printing.artist ?? "—"}</td>
                     </tr>
