@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardImage } from "@/components/card-image";
+import { CardRulesText } from "@/components/card-rules-text";
 import { Tag } from "@/components/tag";
 import {
   getClassificationTag,
@@ -69,17 +70,12 @@ export default async function CardPage({
               <Stat label="Might" value={card.might} />
             </dl>
 
-            {card.rulesTextHtml ? (
-              <div
-                className="rich-text text-sm leading-6"
-                dangerouslySetInnerHTML={{
-                  __html: sanitizeProviderHtml(card.rulesTextHtml),
-                }}
-              />
-            ) : card.rulesTextPlain ? (
-              <p className="whitespace-pre-line text-sm leading-6">
-                {card.rulesTextPlain}
-              </p>
+            {card.rulesTextPlain ? (
+              <CardRulesText text={card.rulesTextPlain} />
+            ) : card.rulesTextHtml ? (
+              <div className="rich-text text-sm leading-6">
+                {stripProviderHtml(card.rulesTextHtml)}
+              </div>
             ) : null}
 
             {card.flavorText ? (
@@ -137,9 +133,9 @@ function Stat({ label, value }: { label: string; value: number | null }) {
   );
 }
 
-function sanitizeProviderHtml(html: string) {
+function stripProviderHtml(html: string) {
   return html
     .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-    .replace(/\son\w+="[^"]*"/gi, "")
-    .replace(/\son\w+='[^']*'/gi, "");
+    .replace(/<[^>]+>/g, "")
+    .trim();
 }
