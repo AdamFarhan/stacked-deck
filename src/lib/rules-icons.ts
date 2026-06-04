@@ -31,6 +31,7 @@ export const baseRulesKeywords = [
   "WEAPONMASTER",
   "EQUIP",
   "REACTION",
+  "REPEAT",
 ] as const;
 
 export const numberedRulesKeywords = [

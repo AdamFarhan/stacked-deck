@@ -29,7 +29,6 @@ const excludedObservedTags = new Set([
   "SHOWDOWN",
   "TRASH",
   "BURST",
-  "REPEAT",
 ]);
 
 async function main() {

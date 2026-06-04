@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   extractBracketTags,
   formatUnknownColonToken,
+  getDisplayRulesText,
   parseRulesText,
+  richRulesTextToPlainText,
 } from "@/lib/rules-text";
 
 const sample =
@@ -40,5 +42,30 @@ describe("parseRulesText", () => {
 
   it("formats unknown colon tokens into readable fallback labels", () => {
     expect(formatUnknownColonToken("rb_some_new_icon")).toBe("Some New Icon");
+  });
+
+  it("converts rich provider rules text to plain text with line breaks", () => {
+    const text = richRulesTextToPlainText(
+      "<p>When you play this, gain 1 XP.<br />[Equip] &mdash; Spend 1 XP (Pay the cost: Attach this to a unit you control.)</p>",
+    );
+
+    expect(parseRulesText(text)).toEqual([
+      { type: "text", value: "When you play this, gain 1 XP." },
+      { type: "lineBreak" },
+      { type: "keyword", value: "Equip" },
+      {
+        type: "text",
+        value: " — Spend 1 XP (Pay the cost: Attach this to a unit you control.)",
+      },
+    ]);
+  });
+
+  it("prefers rich text over plain text for display rules text", () => {
+    expect(
+      getDisplayRulesText({
+        plain: "When you play this, gain 1 XP.[Equip] — Spend 1 XP",
+        rich: "<p>When you play this, gain 1 XP.<br />[Equip] — Spend 1 XP</p>",
+      }),
+    ).toBe("When you play this, gain 1 XP.\n[Equip] — Spend 1 XP");
   });
 });

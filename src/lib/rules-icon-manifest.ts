@@ -25,6 +25,7 @@ export const availableRulesKeywordNames = [
   "PREDICT",
   "QUICK-DRAW",
   "REACTION",
+  "REPEAT",
   "SHIELD",
   "SHIELD 2",
   "SHIELD 3",

@@ -13,6 +13,7 @@ describe("rules icon registry", () => {
     for (const keyword of [
       "Action",
       "Reaction",
+      "Repeat",
       "Vision",
       "Weaponmaster",
       "Equip",

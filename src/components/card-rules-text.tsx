@@ -7,7 +7,13 @@ import {
 } from "@/lib/rules-text";
 import { cn } from "@/lib/utils";
 
-export function CardRulesText({ text, className }: { text: string; className?: string }) {
+export function CardRulesText({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string;
+}) {
   const tokens = parseRulesText(text);
 
   return (
@@ -43,7 +49,7 @@ function RulesTextTokenView({ token }: { token: RulesTextToken }) {
       <img
         src={icon.path}
         alt={icon.label}
-        className="mx-0.5 inline-block h-[1.45em] w-auto align-[-0.28em]"
+        className="mx-0.5 inline-block h-[1.35em] w-auto align-[-0.28em]"
         data-testid="rules-keyword-icon"
       />
     );
@@ -52,7 +58,11 @@ function RulesTextTokenView({ token }: { token: RulesTextToken }) {
   const icon = getRulesIconForToken("colon", token.value);
 
   if (!icon) {
-    return <FallbackRulesPill>{formatUnknownColonToken(token.value)}</FallbackRulesPill>;
+    return (
+      <FallbackRulesPill>
+        {formatUnknownColonToken(token.value)}
+      </FallbackRulesPill>
+    );
   }
 
   if (icon.mode === "image") {
@@ -71,8 +81,10 @@ function RulesTextTokenView({ token }: { token: RulesTextToken }) {
       role="img"
       aria-label={icon.label}
       className={cn(
-        "mx-0.5 inline-block bg-current",
-        icon.kind === "number" ? "h-[1.35em] w-[1.35em] align-[-0.25em]" : "h-[1.15em] w-[1.15em] align-[-0.16em]",
+        "inline-block bg-current",
+        icon.kind === "number"
+          ? "h-[1.35em] w-[1.35em] align-[-0.25em]"
+          : "h-[1.15em] w-[1.15em] align-[-0.16em]",
       )}
       data-testid={`rules-${icon.kind}-icon`}
       style={{

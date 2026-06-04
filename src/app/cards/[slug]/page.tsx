@@ -8,6 +8,7 @@ import {
   getVisibleDomains,
   isBattlefieldCard,
 } from "@/lib/cards";
+import { getDisplayRulesText } from "@/lib/rules-text";
 import { getCardBySlug } from "@/lib/search";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,10 @@ export default async function CardPage({
   const primaryPrinting = card.printings[0];
   const visibleDomains = getVisibleDomains(card.domains);
   const classificationTag = getClassificationTag(card);
+  const rulesText = getDisplayRulesText({
+    plain: card.rulesTextPlain,
+    rich: card.rulesTextHtml,
+  });
 
   return (
     <section className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-8 sm:grid-cols-[260px_1fr] lg:grid-cols-[320px_1fr]">
@@ -70,12 +75,8 @@ export default async function CardPage({
               <Stat label="Might" value={card.might} />
             </dl>
 
-            {card.rulesTextPlain ? (
-              <CardRulesText text={card.rulesTextPlain} />
-            ) : card.rulesTextHtml ? (
-              <div className="rich-text text-sm leading-6">
-                {stripProviderHtml(card.rulesTextHtml)}
-              </div>
+            {rulesText ? (
+              <CardRulesText text={rulesText} />
             ) : null}
 
             {card.flavorText ? (
@@ -131,11 +132,4 @@ function Stat({ label, value }: { label: string; value: number | null }) {
       <dd className="mt-1 text-xl font-semibold">{value ?? "—"}</dd>
     </div>
   );
-}
-
-function stripProviderHtml(html: string) {
-  return html
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-    .replace(/<[^>]+>/g, "")
-    .trim();
 }
