@@ -1,6 +1,6 @@
 "use client";
 
-import { List, Menu, Shuffle, X } from "lucide-react";
+import { List, Menu, Shuffle, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -50,6 +50,9 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
               <SearchForm variant="header" />
             </div>
             <nav className="hidden items-center gap-4 text-sm text-white/80 sm:flex">
+              <Link href="/search/advanced" className="hover:text-white">
+                Advanced
+              </Link>
               <Link href="/sets" className="hover:text-white">
                 Sets
               </Link>
@@ -107,6 +110,15 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
                   </DrawerClose>
                 </DrawerHeader>
                 <nav className="grid gap-1 p-2 text-sm">
+                  <DrawerClose asChild>
+                    <Link
+                      href="/search/advanced"
+                      className="inline-flex items-center gap-2 rounded-md px-3 py-2 font-medium hover:bg-accent"
+                    >
+                      <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+                      Advanced
+                    </Link>
+                  </DrawerClose>
                   <DrawerClose asChild>
                     <Link
                       href="/sets"

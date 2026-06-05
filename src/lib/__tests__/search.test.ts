@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildAdvancedCardSearchWhere,
   buildCardSearchWhere,
   cardScore,
+  getDefaultAdvancedSearchFilters,
   hashSeed,
+  hasAdvancedSearchCriteria,
   getSingleCardRedirect,
+  parseAdvancedSearchParams,
   rankCards,
   selectRandomCard,
   selectSeededRandomFlavorCard,
@@ -44,6 +48,132 @@ describe("search helpers", () => {
       OR: [
         { normalizedName: { contains: "master yi", mode: "insensitive" } },
         { searchText: { contains: "master yi", mode: "insensitive" } },
+      ],
+    });
+  });
+
+  it("parses advanced search params from repeated URL values", () => {
+    const params = new URLSearchParams();
+    params.set("q", "Master Yi");
+    params.append("domain", "Body");
+    params.append("domain", "Calm");
+    params.append("set", "unl");
+    params.append("type", "Unit");
+    params.append("rarity", "Rare");
+    params.set("energyMin", "2");
+    params.set("energyMax", "6");
+    params.set("powerMin", "1");
+    params.set("powerMax", "3");
+    params.set("mightMin", "4");
+    params.set("mightMax", "8");
+
+    expect(parseAdvancedSearchParams(params)).toEqual({
+      query: "Master Yi",
+      domains: ["Body", "Calm"],
+      sets: ["UNL"],
+      types: ["Unit"],
+      rarities: ["Rare"],
+      energy: [2, 6],
+      power: [1, 3],
+      might: [4, 8],
+    });
+  });
+
+  it("clamps and swaps advanced numeric ranges", () => {
+    expect(
+      parseAdvancedSearchParams({
+        energyMin: "12",
+        energyMax: "-4",
+        powerMin: "50",
+        powerMax: "2",
+      }),
+    ).toMatchObject({
+      energy: [0, 12],
+      power: [2, 4],
+      might: [0, 12],
+    });
+  });
+
+  it("detects active advanced search criteria", () => {
+    expect(hasAdvancedSearchCriteria(getDefaultAdvancedSearchFilters())).toBe(false);
+    expect(
+      hasAdvancedSearchCriteria({
+        ...getDefaultAdvancedSearchFilters(),
+        domains: ["Body"],
+      }),
+    ).toBe(true);
+    expect(
+      hasAdvancedSearchCriteria({
+        ...getDefaultAdvancedSearchFilters(),
+        energy: [1, 12],
+      }),
+    ).toBe(true);
+  });
+
+  it("builds advanced text-only search filters", () => {
+    expect(
+      buildAdvancedCardSearchWhere({
+        ...getDefaultAdvancedSearchFilters(),
+        query: "master yi",
+      }),
+    ).toEqual({
+      AND: [
+        {
+          OR: [
+            { normalizedName: { contains: "master yi", mode: "insensitive" } },
+            { searchText: { contains: "master yi", mode: "insensitive" } },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("combines advanced category filters with AND semantics", () => {
+    expect(
+      buildAdvancedCardSearchWhere({
+        ...getDefaultAdvancedSearchFilters(),
+        domains: ["Body", "Calm"],
+        sets: ["UNL", "SFD"],
+        types: ["Unit", "Spell"],
+        rarities: ["Rare", "Epic"],
+      }),
+    ).toEqual({
+      AND: [
+        { domains: { hasSome: ["Body", "Calm"] } },
+        { type: { in: ["Unit", "Spell"], mode: "insensitive" } },
+        {
+          printings: {
+            some: {
+              set: {
+                code: { in: ["UNL", "SFD"] },
+              },
+            },
+          },
+        },
+        {
+          printings: {
+            some: {
+              rarity: { in: ["Rare", "Epic"], mode: "insensitive" },
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  it("adds inclusive numeric range filters only when constrained", () => {
+    expect(
+      buildAdvancedCardSearchWhere({
+        ...getDefaultAdvancedSearchFilters(),
+        energy: [2, 7],
+        power: [1, 4],
+        might: [0, 6],
+      }),
+    ).toEqual({
+      AND: [
+        { energy: { gte: 2, lte: 7 } },
+        { power: { gte: 1, lte: 4 } },
+        { might: { gte: 0, lte: 6 } },
       ],
     });
   });

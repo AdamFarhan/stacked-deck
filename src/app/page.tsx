@@ -1,9 +1,14 @@
 import { SearchForm } from "@/components/search-form";
 import { getSeededRandomFlavorCard } from "@/lib/search";
-import { List, Shuffle } from "lucide-react";
+import { List, Shuffle, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 
 const homeLinks = [
+  {
+    href: "/search/advanced",
+    label: "Advanced",
+    Icon: SlidersHorizontal,
+  },
   {
     href: "/sets",
     label: "Sets",
