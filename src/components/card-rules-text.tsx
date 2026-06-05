@@ -17,7 +17,7 @@ export function CardRulesText({
   const tokens = parseRulesText(text);
 
   return (
-    <div className={cn("text-sm leading-7", className)}>
+    <div className={cn("text-md", className)}>
       {tokens.map((token, index) => (
         <RulesTextTokenView key={`${token.type}-${index}`} token={token} />
       ))}

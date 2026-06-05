@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardImage } from "@/components/card-image";
 import { CardRulesText } from "@/components/card-rules-text";
+import { MetadataTags } from "@/components/metadata-tags";
 import { Tag } from "@/components/tag";
 import {
   getClassificationTag,
@@ -62,6 +63,7 @@ export default async function CardPage({
               <Tag value={primaryPrinting.rarity} />
             ) : null}
           </div>
+          <MetadataTags tags={card.tags} />
         </div>
 
         <Card>
